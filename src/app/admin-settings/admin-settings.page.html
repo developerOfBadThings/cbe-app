@@ -1,0 +1,612 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>admin-settings</ion-title>
+    <ion-button slot="end" (click)="userDetails.logout()">Logout</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Segments -->
+  <ion-segment value="setVariables" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="setVariables">
+      <ion-label>Admin actions</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="statements">
+      <ion-label>Statements</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- variables page -->
+  <!-- variables section -->
+  <div *ngIf="segment === 'setVariables'">
+    <ion-item (click)="toggleOptions('showVariableOptions')">
+      <ion-label>Variable Options</ion-label>
+    </ion-item>
+    <div *ngIf="optionToggles.showVariableOptions">
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showCalfPriceWindow')">1. Set Calf Price</ion-button>
+      </ion-item>
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showMemberFeeWindow')">2. Set Member Fee</ion-button>
+      </ion-item>
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showNewsfeedWindow')">12. Set Newsfeed item</ion-button>
+      </ion-item>
+    </div>
+
+    <!-- member section -->
+    <ion-item (click)="toggleOptions('showMemberOptions')">
+      <ion-label>Member Options</ion-label>
+    </ion-item>
+    <div *ngIf="optionToggles.showMemberOptions">
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showMemberLoginWindow')">8. Toggle Member login</ion-button>
+      </ion-item>
+
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showDistinguishMemberWindow')">9. Distinguish Members</ion-button>
+      </ion-item>
+
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showNonMemberUserWindow')">10. See non-member users</ion-button>
+      </ion-item>
+
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showRegisteredNonUserWindow')">11. See list of registered non-users</ion-button>
+      </ion-item>
+
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showMemberTnCAcceptWindow')">18. Toggle Member T&C re-accepts</ion-button>
+      </ion-item>
+
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showMemberDataCaptureWindow')">50. Member Data Capture</ion-button>
+      </ion-item>
+
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showMemberTotalCaptureWindow')">51. Member Total Capture</ion-button>
+      </ion-item>
+
+      <!-- Member Payout -->
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showMemberPayoutWindow')">52. Toggle Member Payout</ion-button>
+      </ion-item>
+
+      <!-- Member calf share generate -->
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showMemberCalfshareWindow')">53. Generate Member Calf Share</ion-button>
+      </ion-item>
+    </div>
+
+    <!-- toggle transactions -->
+    <ion-item (click)="toggleOptions('showTransactionalOptions')">
+      <ion-label>Transaction Options</ion-label>
+    </ion-item>
+    <div *ngIf="optionToggles.showTransactionalOptions">
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showSellCattleUnitWindow')">13. Sell Cattle Units</ion-button>
+      </ion-item>
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showSellRequestWindow')">14. See sell requests</ion-button>
+      </ion-item>
+      <ion-item class="buttonItems">
+        <ion-button (click)="toggleWindows('showTransactionListWindow')">20. See List of Transactions</ion-button>
+      </ion-item>
+    </div>
+
+    <br>
+
+    <!-- Variable options -->
+    <div>
+      <!-- 1. Set Calf Price -->
+      <div *ngIf="windowToggles.showCalfPriceWindow" class="windowItems">
+        <ion-item>
+          <ion-label position="floating">Set the new calf price</ion-label>
+          <ion-input [(ngModel)]="newCalfPrice">R </ion-input>
+        </ion-item>
+        <ion-item (click)="togglePicker()">
+          <ion-label>Set the new calf price date</ion-label>
+          <ion-text>{{formattedDate}}</ion-text>
+          <ion-datetime
+            *ngIf="showPicker"
+            #datetime
+            presentation="month-year"
+            [value]="newCalfPriceDate"
+            (ionChange)="datePicked(datetime.value)"
+          ></ion-datetime>
+        </ion-item>
+        <ion-button (click)="submitCalfPrice()">Submit</ion-button>
+        <!-- historic calf prices -->
+        <table class="whiteTable">
+          <tr>
+            <th>Date</th>
+            <th>Calf Price</th>
+            <th>CBE</th>
+            <th>Delete</th>
+          </tr>
+          <tr *ngFor="let priceItem of calfPriceList">
+            <td>{{priceItem.Maand}}</td>
+            <td>R {{priceItem.Kalfprys}}</td>
+            <td>R {{priceItem.CBE}}</td>
+            <td><ion-button (click)="deleteCalfPrice(priceItem)">Delete</ion-button></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 2. Set Member Fee -->
+      <div *ngIf="windowToggles.showMemberFeeWindow" class="windowItems">
+        <ion-item>
+          <ion-label position="floating">Set the new member fee</ion-label>
+          <ion-input [(ngModel)]="newMemberFee">R </ion-input>
+        </ion-item>
+        <ion-item (click)="togglePicker()">
+          <ion-label>Set the new member fee date</ion-label>
+          <ion-text>{{formattedDate}}</ion-text>
+          <ion-datetime
+            *ngIf="showPicker"
+            #datetime
+            presentation="month-year"
+            [value]="newMemberFeeDate"
+            (ionChange)="datePicked(datetime.value)"
+          ></ion-datetime>
+        </ion-item>
+        <ion-button (click)="submitMemberFee()">Submit</ion-button>
+        <!-- historic member fees -->
+        <table class="whiteTable">
+          <tr>
+            <th>Date</th>
+            <th>Member fee</th>
+            <th>Updated by</th>
+            <th>Delete</th>
+          </tr>
+          <tr *ngFor="let priceItem of memberFeeList">
+            <td>{{priceItem.Date}}</td>
+            <td>R {{priceItem.MemberFee}}</td>
+            <td>{{priceItem.UpdatedBy}}</td>
+            <td><ion-button (click)="deleteMemberFee(priceItem)">Delete</ion-button></td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 12. Set Newsfeed item -->
+      <div *ngIf="windowToggles.showNewsfeedWindow" class="windowItems">
+        <ion-item>
+          <ion-label position="floating">Set the newsfeed message</ion-label>
+          <ion-input [(ngModel)]="newNewsfeedMessage"></ion-input>
+        </ion-item>
+        <ion-button (click)="submitNewsfeedItem()">Submit</ion-button>
+        <!-- historic newsfeeds -->
+        <table class="whiteTable">
+          <tr>
+            <th>Date</th>
+            <th>Message</th>
+            <th>Action</th>
+          </tr>
+          <tr *ngFor="let newsItem of newsfeedList">
+            <td>{{newsItem.Date}}</td>
+            <td>{{newsItem.newsfeedItem}}</td>
+            <td>
+              <ion-button (click)="deleteNewsfeedItem(newsItem)">Delete</ion-button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Member options -->
+    <div>
+      <!-- 8. Toggle Member login -->
+      <div *ngIf="windowToggles.showMemberLoginWindow" class="windowItems">
+        <!-- user list -->
+        <table class="whiteTable">
+          <tr>
+            <th>Name</th>
+            <th>Member Number</th>
+            <th>Can Login</th>
+          </tr>
+          <tr *ngFor="let userItem of userList">
+            <td>{{userItem.username}}</td>
+            <td>{{userItem.memberNumber}}</td>
+            <td>
+              <ion-checkbox [checked]="userItem.canLogin" (ionChange)="addLoginBool($event, userItem)">
+              </ion-checkbox>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 9. Distinguish Members -->
+      <div *ngIf="windowToggles.showDistinguishMemberWindow" class="windowItems">
+        <!-- user list -->
+        <table class="whiteTable">
+          <tr>
+            <th>Name</th>
+            <th>Member Number</th>
+            <th>Is Member</th>
+          </tr>
+          <tr *ngFor="let userItem of userList">
+            <td>{{userItem.username}}</td>
+            <td>{{userItem.memberNumber}}</td>
+            <td>
+              <ion-checkbox [checked]="userItem.isMember" (ionChange)="addIsMemberBool($event, userItem)">
+              </ion-checkbox>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 18. T&C Reaccept -->
+      <div *ngIf="windowToggles.showMemberTnCAcceptWindow" class="windowItems">
+        <ion-button (click)="setUserTnCReaccept()">Apply to users</ion-button>
+      </div>
+
+      <!-- 50. Data Capture -->
+      <div *ngIf="windowToggles.showMemberDataCaptureWindow" class="windowItems">
+        <ion-label>Select user</ion-label>
+        <br>
+        <select name="fieldName" [(ngModel)]="selectedUser" (change)="selectedUserChanged()">
+          <option *ngFor="let user of userList" [value]="user.username">{{user.username}}</option>
+        </select>
+        <br>
+        <br>
+        <ion-button *ngIf="selectedUser" (click)="saveUserEntries()">Save User data</ion-button>
+        <br>
+        <!-- user data list -->
+        <table class="whiteTable" *ngIf="selectedUser">
+          <tr>
+            <th>Date</th>
+            <th>Getal CBE</th>
+            <th>Kalfprys</th>
+            <th>Deeloes CBE</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <!-- Maand -->
+            <td>
+              <ion-text (click)="togglePicker(null)">{{formattedDate}}</ion-text>
+              <ion-datetime
+              *ngIf="showPicker"
+              #datetime
+              presentation="day-month-year"
+              [value]="newUserDataEntryDate"
+              (ionChange)="datePicked(datetime.value)"
+            ></ion-datetime>
+            </td>
+            <!-- Getal CBE -->
+            <td>
+              <ion-input [(ngModel)]="newGetalCBE"></ion-input>
+            </td>
+            <!-- Kalfprys -->
+            <td>
+              <ion-input [(ngModel)]="newKalfprys"></ion-input>
+            </td>
+            <!-- Deeloes CBE -->
+            <td>
+              <ion-input [(ngModel)]="newOmskepNaCBE"></ion-input>
+            </td>
+            <!-- Action -->
+            <td>
+              <ion-button (click)="addUserDataEntry()">Save</ion-button>
+            </td>
+          </tr>
+          <tr *ngFor="let dataItem of selectedUserDataList[0].parsedData; let i = index;">
+            <td>{{dataItem.Maand}}</td>
+            <td>{{dataItem['Getal CBE']}}</td>
+            <td>{{dataItem['Kalfprys']}}</td>
+            <td>{{dataItem['Deeloes CBE']}}</td>
+            <td><ion-button (click)="deleteUserDataItem(i)">Delete</ion-button></td>
+          </tr>
+        </table>
+
+      </div>
+
+      <!-- 51. Total Capture -->
+      <div *ngIf="windowToggles.showMemberTotalCaptureWindow" class="windowItems">
+        <ion-label>Select user</ion-label>
+        <br>
+        <select name="fieldName" [(ngModel)]="selectedUser" (change)="selectedUserChanged()">
+          <option *ngFor="let user of userList" [value]="user.username">{{user.username}}</option>
+        </select>
+        <br>
+        <br>
+        <ion-button (click)="saveUserEntries()">Save User data</ion-button>
+        <br>
+        <!-- user data list -->
+        <table class="whiteTable" *ngIf="selectedUser">
+          <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Plus/Minus</th>
+            <th>Action</th>
+          </tr>
+          <tr>
+            <!-- Maand -->
+            <td>
+              <ion-text (click)="togglePicker(null)">{{formattedDate}}</ion-text>
+              <ion-datetime
+                *ngIf="showPicker"
+                #datetime
+                presentation="day-month-year"
+                [value]="newUserDataEntryDate"
+                (ionChange)="datePicked(datetime.value)"
+              ></ion-datetime>
+            </td>
+            <!-- Amount -->
+            <td>
+              <ion-input [(ngModel)]="newTotalChange"></ion-input>
+            </td>
+            <!-- Plus/Minus -->
+            <td>
+              <select [(ngModel)]="selectedChangeOperator">
+                <option value="Minus">Minus</option>
+                <option value="Plus">Plus</option>
+              </select>
+            </td>
+            <!-- Action -->
+            <td>
+              <ion-button (click)="addTotalChangeEntry()">Save</ion-button>
+            </td>
+          </tr>
+          <tr *ngFor="let dataItem of selectedUserDataList[0].parsedTotals; let i = index;">
+            <td>{{dataItem.Date}}</td>
+            <td>{{dataItem.Amount}}</td>
+            <td>{{dataItem.Operator}}</td>
+            <td><ion-button (click)="deleteUserTotalItem(i)">Delete</ion-button></td>
+          </tr>
+        </table>
+
+      </div>
+
+      <!-- 52. Toggle Member payout -->
+      <div *ngIf="windowToggles.showMemberPayoutWindow" class="windowItems">
+        <!-- user list -->
+        <table class="whiteTable">
+          <tr>
+            <th>Name</th>
+            <th>Member Number</th>
+            <th>Monthly payout</th>
+          </tr>
+          <tr *ngFor="let userItem of userList">
+            <td>{{userItem.username}}</td>
+            <td>{{userItem.memberNumber}}</td>
+            <td>
+              <ion-checkbox [checked]="userItem.payout" (ionChange)="addPayoutBool($event, userItem)">
+              </ion-checkbox>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- 53. Generate Member Calfshare -->
+      <div *ngIf="windowToggles.showMemberCalfshareWindow" class="windowItems">
+        <!-- type selection -->
+        <p>Select type of update</p>
+        <select [(ngModel)]="calfShareTypeSelection">
+          <option value="All">All users</option>
+          <option value="User">Single user</option>
+        </select>
+
+        <!-- Single User selected -->
+        <div *ngIf="calfShareTypeSelection === 'User'">
+          <!-- User selection -->
+          <p>Select the user to update</p>
+          <select [(ngModel)]="selectedUser" (change)="selectedUserChanged()">
+            <option *ngFor="let user of userList" [value]="user">{{user.username}}</option>
+          </select>
+
+          <br>
+          <br>
+          <ion-button (click)="saveUserEntries()">Save User data</ion-button>
+          <br>
+          <!-- user data list -->
+          <table class="whiteTable" *ngIf="selectedUser">
+            <tr>
+              <th>Date</th>
+              <th>Getal CBE</th>
+              <th>Kalfprys</th>
+              <th>Deeloes CBE</th>
+              <th>Action</th>
+            </tr>
+            <tr>
+              <!-- Maand -->
+              <td>
+                <ion-text (click)="togglePicker(null)">{{formattedDate}}</ion-text>
+                <ion-datetime
+                  *ngIf="showPicker"
+                  #datetime
+                  presentation="month-year"
+                  [value]="newUserDataEntryDate"
+                  (ionChange)="datePickedAndGenerate(datetime.value)"
+                ></ion-datetime>
+              </td>
+              <!-- Getal CBE -->
+              <td>
+                <ion-input [(ngModel)]="newGetalCBE"></ion-input>
+              </td>
+              <!-- Kalfprys -->
+              <td>
+                <ion-input [(ngModel)]="newKalfprys"></ion-input>
+              </td>
+              <!-- Deeloes CBE -->
+              <td>
+                <ion-input [(ngModel)]="newOmskepNaCBE"></ion-input>
+              </td>
+              <!-- Action -->
+              <td>
+                <ion-button (click)="addUserDataEntry()">Save</ion-button>
+              </td>
+            </tr>
+            <tr *ngFor="let dataItem of selectedUserDataList[0].parsedData; let i = index;">
+              <td>{{dataItem.Maand}}</td>
+              <td>{{dataItem['Getal CBE']}}</td>
+              <td>{{dataItem['Kalfprys']}}</td>
+              <td>{{dataItem['Deeloes CBE']}}</td>
+              <td><ion-button (click)="deleteUserDataItem(i)">Delete</ion-button></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- All users selected -->
+        <div *ngIf="calfShareTypeSelection === 'All'">
+
+        </div>
+
+
+
+
+      </div>
+    </div>
+
+    <!-- Transaction options -->
+    <div>
+      <!-- 14. See sell orders -->
+      <div *ngIf="windowToggles.showTransactionListWindow" class="windowItems">
+        <!-- Open orders -->
+        <table class="whiteTable" *ngIf="sellOrderList && sellOrderList.length && sellOrderList.length > 0 && hasOpenOrders">
+          <tr class="whiteTable">
+            <th>Seller name</th>
+            <th>Seller unique no.</th>
+            <th>Amount for sale</th>
+            <th>Price in Rands</th>
+            <th>Action</th>
+          </tr>
+          <tr *ngFor="let sellOrder of sellOrderList" class="whiteTable">
+            <!-- Not accepted -->
+            <td *ngIf="!sellOrder.accepted">{{sellOrder.sellUser}}</td>
+            <td *ngIf="!sellOrder.accepted">{{sellOrder.userMemberNumber}}</td>
+            <td *ngIf="!sellOrder.accepted">{{sellOrder.sellAmount}}</td>
+            <td *ngIf="!sellOrder.accepted">R {{sellOrder.sellPrice}}</td>
+            <td *ngIf="!sellOrder.accepted">
+              <ion-button (click)="acceptSellOrder(sellOrder)">Accept</ion-button>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Accepted orders -->
+        <table class="whiteTable" *ngIf="sellOrderList && sellOrderList.length && sellOrderList.length > 0 && hasAcceptedOrders">
+          <tr class="whiteTable">
+            <th>Seller name</th>
+            <th>Seller unique no.</th>
+            <th>Amount bought</th>
+            <th>Price in Rands</th>
+            <th>Payment made</th>
+            <th>Cancel order</th>
+          </tr>
+          <tr *ngFor="let sellOrder of sellOrderList" class="whiteTable">
+            <!-- Accepted -->
+            <td *ngIf="sellOrder.accepted">{{sellOrder.sellUser}}</td>
+            <td *ngIf="sellOrder.accepted">{{sellOrder.sellUserMemberNumber}}</td>
+            <td *ngIf="sellOrder.accepted">{{sellOrder.acceptedAmount}}</td>
+            <td *ngIf="sellOrder.accepted">R {{sellOrder.acceptedPrice}}</td>
+            <td *ngIf="sellOrder.accepted">
+              <ion-checkbox [checked]="sellOrder.buyerPaid" (ionChange)="setBuyerPaid($event, sellOrder)">
+              </ion-checkbox>
+            </td>
+            <td *ngIf="sellOrder.accepted">
+              <ion-button (click)="cancelSellOrder(sellOrder)">Cancel</ion-button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- statements page -->
+  <div *ngIf="segment === 'statements'">
+    <h4>Select the statement you want</h4>
+    <br>
+    <div *ngFor="let page of pages">
+      <ion-button (click)="setPage(page)">{{page.value}}</ion-button>
+    </div>
+
+    <br>
+    <br>
+
+    <h4>Select the date period</h4>
+
+    <!-- From date -->
+    <ion-item>
+      <ion-label>From date</ion-label>
+      <input type="date" [ngModel]="today" placeholder="From date">
+    </ion-item>
+
+    <!-- To date -->
+    <ion-item>
+      <ion-label>To date</ion-label>
+      <input type="date" [ngModel]="today" placeholder="To date">
+    </ion-item>
+
+    <!-- all user page -->
+    <div *ngIf="currentPage.name === 'allUserBalances'">
+      <br>
+      All {{userList.length}} users selected
+    </div>
+
+    <!-- single user page -->
+    <div *ngIf="currentPage.name === 'singleUserBalances'">
+      <br>
+      <ion-label>Select user</ion-label>
+      <br>
+      <select name="fieldName" [(ngModel)]="selectedUser">
+        <option *ngFor="let user of userList" [value]="user">{{user.username}}</option>
+      </select>
+    </div>
+
+    <!-- monthly calf share page -->
+    <div *ngIf="currentPage.name === 'monthlyCalfShare'">
+
+    </div>
+
+    <div *ngIf="currentPage.name && currentPage.value">
+      <br>
+      <ion-button (click)="viewStatement(currentPage)">View {{currentPage.value}}</ion-button>
+      <ion-button (click)="saveToDatabase()">Export {{currentPage.value}}</ion-button>
+      <br>
+    </div>
+
+    <!-- all user balances -->
+    <div *ngIf="showAllUserBalances">
+      <br>
+      <!-- user data list -->
+      <table class="whiteTable">
+        <!-- headings -->
+        <tr>
+          <th>User</th>
+          <th>Total CBE</th>
+        </tr>
+        <!-- user data -->
+        <tr *ngFor="let dataItem of updatedUserDataList">
+          <td>{{dataItem.username}}</td>
+          <td>{{dataItem.total}}</td>
+        </tr>
+        <!-- grand total -->
+        <tr>
+          <td>Grand total</td>
+          <td>{{runningTotal}}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- single user statement -->
+    <div *ngIf="currentPage.name === 'singleUserBalances'">
+      <div *ngFor="let table of tableData">
+        <div *ngIf="table.sheetName === selectedUser">
+          <h4>{{table.sheetName}}</h4>
+          <table class="whiteTable">
+            <tr class="whiteTable">
+              <th *ngFor="let heading of table.headings">{{heading}}</th>
+            </tr>
+            <tr *ngFor="let row of table.data" class="whiteTable">
+              <td *ngFor="let head of table.headings">{{row[head]}}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</ion-content>
