@@ -1,0 +1,51 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Dashboard
+    </ion-title>
+    <ion-button slot="end" (click)="userDetails.logout()">Logout</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Dashboard</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <h3>Welcome {{loggedInUser}}</h3>
+
+  <p *ngIf="calfPrice">
+    The current calf price is: R <strong>{{calfPrice}}</strong>
+    <br>
+  </p>
+
+  <p *ngIf="cattleUnit">
+    The current value of a cattle unit is: <strong>R {{cattleUnit}}</strong>
+    <br>
+  </p>
+
+  <p *ngIf="myCattleUnits">
+    You own <strong>{{myCattleUnits}}</strong> cattle units.
+    <br>
+  </p>
+
+  <p *ngIf="myCattleUnitValue">
+    The value of your cattle units are <strong>R {{myCattleUnitValue}}</strong>
+    <br>
+  </p>
+
+  <p *ngIf="calfShareDate">
+    The last calf share date was on <strong>{{calfShareDate}}</strong>
+    <br>
+  </p>
+
+  <p *ngIf="calfShareAmount">
+    The value of the previous calf share was <strong>R {{calfShareAmount}}</strong>
+    <br>
+  </p>
+  <br>
+  <br>
+
+</ion-content>

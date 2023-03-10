@@ -1,0 +1,163 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <!-- Segments -->
+  <ion-segment value="login" (ionChange)="segmentChanged($event)">
+    <ion-segment-button value="login">
+      <ion-label>Login</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="register">
+      <ion-label>Register</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <h4>Welcome to the CB app</h4>
+
+  <!-- logo -->
+<!--  <div>-->
+<!--    <img height="200" src="https://scontent-cpt1-1.xx.fbcdn.net/v/t31.18172-8/16179777_1859634477583278_6254361497241562277_o.jpg?_nc_cat=104&ccb=1-5&_nc_sid=09cbfe&_nc_eui2=AeHIHK0FHNd-qlPpDx9TGFxS2cvMDcJfPynZy8wNwl8_KbWmCSUvtkImr9no4AYgaKE&_nc_ohc=yBh2bXlUpqEAX_xI3Gm&_nc_oc=AQlb2jpFx-V5KzB9KL86rOwwc_ii9ieKA7j10EiIo4uK5_VsymjOvReWscTDcESz2zI&tn=C1HVs17nIdK3q283&_nc_ht=scontent-cpt1-1.xx&oh=00_AT9A65QM3pilYAr-9X03m6fCopOvgAggZVLIy23iWw67Xw&oe=61EF96E9" alt="cb">-->
+<!--  </div>-->
+
+  <!-- Login -->
+  <div *ngIf="segment === 'login'">
+    <input placeholder="username" [(ngModel)]="username">
+    <br>
+    <input placeholder="password" [(ngModel)]="password">
+    <br>
+    <br>
+    <ion-button (click)="login()">Login</ion-button>
+
+    <br>
+    <div *ngIf="message">
+      <ion-note color="danger">{{message}}</ion-note>
+    </div>
+
+    <!-- Confirm modal -->
+    <ion-modal [isOpen]="showAdminPopup" [swipeToClose]="true" #confirmModal>
+      <ng-template>
+        <ion-content>Do you want to log in as a user or an admin?</ion-content>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="dismissModal('user')">User</ion-button>
+          </ion-buttons>
+          <ion-buttons slot="end">
+            <ion-button (click)="dismissModal('admin')">Admin</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ng-template>
+    </ion-modal>
+
+  </div>
+
+  <!-- Register -->
+  <div *ngIf="segment === 'register'">
+    <h4>Login Details</h4>
+
+    <ion-item>
+      <ion-label position="floating">Username</ion-label>
+      <ion-input [(ngModel)]="username"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Password</ion-label>
+      <ion-input [(ngModel)]="password"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Confirm Password</ion-label>
+      <ion-input [(ngModel)]="confirmPassword"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Member Number</ion-label>
+      <ion-input [(ngModel)]="memberNumber"></ion-input>
+    </ion-item>
+
+    <ion-button (click)="register()">Register</ion-button>
+
+    <h4>Personal info</h4>
+    <ion-item>
+      <ion-label position="floating">Full name</ion-label>
+      <ion-input [(ngModel)]="fullName"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Physical address</ion-label>
+      <ion-input [(ngModel)]="physicalAddress"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Postal address</ion-label>
+      <ion-input [(ngModel)]="postalAddress"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Email address</ion-label>
+      <ion-input [(ngModel)]="emailAddress"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Contact number</ion-label>
+      <ion-input [(ngModel)]="contactNumber"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">ID number</ion-label>
+      <ion-input [(ngModel)]="idNumber"></ion-input>
+    </ion-item>
+
+    <h4>Company info</h4>
+
+    <ion-item>
+      <ion-label position="floating">VAT number</ion-label>
+      <ion-input [(ngModel)]="vatNumber"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Company number</ion-label>
+      <ion-input [(ngModel)]="companyNumber"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Company representative</ion-label>
+      <ion-input [(ngModel)]="companyRepresentative"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Representatives' designation</ion-label>
+      <ion-input [(ngModel)]="representativeDesignation"></ion-input>
+    </ion-item>
+
+    <h4>Banking info</h4>
+
+    <ion-item>
+      <ion-label position="floating">Account holder</ion-label>
+      <ion-input [(ngModel)]="accountName"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Bank name</ion-label>
+      <ion-input [(ngModel)]="bankName"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Account type</ion-label>
+      <ion-input [(ngModel)]="accountType"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Account number</ion-label>
+      <ion-input [(ngModel)]="accountNumber"></ion-input>
+    </ion-item>
+    <br>
+    <ion-button (click)="register()">Register</ion-button>
+    <br>
+    <br>
+  </div>
+
+</ion-content>

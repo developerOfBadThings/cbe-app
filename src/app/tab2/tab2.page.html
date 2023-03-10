@@ -1,0 +1,279 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Transact
+    </ion-title>
+    <ion-button slot="end" (click)="userDetails.logout()">Logout</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Transact</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <h4 style="text-align: center">I want to: {{currentPage}}</h4>
+  <div>
+    <br>
+    <ion-button fill="solid" color="primary" (click)="setPage('buy')">Buy cattle units</ion-button>
+    <br>
+    <ion-button fill="solid" color="secondary" (click)="setPage('sell')">Sell cattle units</ion-button>
+    <br>
+<!--    <ion-button fill="solid" color="danger" (click)="setPage('transfer')" >Transfer cattle units</ion-button>-->
+<!--    <br>-->
+  </div>
+
+  <!-- buy page -->
+  <div *ngIf="currentPage === 'buy'">
+    <p>The current cattle unit price is R {{cattleUnit}}</p>
+    <br>
+    <!-- Open orders -->
+    <table class="whiteTable" *ngIf="sellOrderList && sellOrderList.length && sellOrderList.length > 0 && hasOpenOrders">
+      <tr class="whiteTable">
+        <th>Seller name</th>
+        <th>Seller unique no.</th>
+        <th>Amount for sale</th>
+        <th>Price in Rands</th>
+        <th>Action</th>
+      </tr>
+      <tr *ngFor="let sellOrder of sellOrderList" class="whiteTable">
+        <!-- Not accepted -->
+        <td *ngIf="!sellOrder.accepted">{{sellOrder.sellUser}}</td>
+        <td *ngIf="!sellOrder.accepted">{{sellOrder.userMemberNumber}}</td>
+        <td *ngIf="!sellOrder.accepted">{{sellOrder.sellAmount}}</td>
+        <td *ngIf="!sellOrder.accepted">R {{sellOrder.sellPrice}}</td>
+        <td *ngIf="!sellOrder.accepted">
+          <ion-button (click)="acceptSellOrder(sellOrder)">Accept</ion-button>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Accepted orders -->
+    <table class="whiteTable" *ngIf="sellOrderList && sellOrderList.length && sellOrderList.length > 0 && hasAcceptedOrders">
+      <tr class="whiteTable">
+        <th>Seller name</th>
+        <th>Seller unique no.</th>
+        <th>Amount bought</th>
+        <th>Price in Rands</th>
+        <th>Payment made</th>
+        <th>Cancel order</th>
+      </tr>
+      <tr *ngFor="let sellOrder of sellOrderList" class="whiteTable">
+        <!-- Accepted -->
+        <td *ngIf="sellOrder.accepted">{{sellOrder.sellUser}}</td>
+        <td *ngIf="sellOrder.accepted">{{sellOrder.sellUserMemberNumber}}</td>
+        <td *ngIf="sellOrder.accepted">{{sellOrder.acceptedAmount}}</td>
+        <td *ngIf="sellOrder.accepted">R {{sellOrder.acceptedPrice}}</td>
+        <td *ngIf="sellOrder.accepted">
+          <ion-checkbox [checked]="sellOrder.buyerPaid" (ionChange)="setBuyerPaid($event, sellOrder)">
+          </ion-checkbox>
+        </td>
+        <td *ngIf="sellOrder.accepted">
+          <ion-button (click)="cancelSellOrder(sellOrder)">Cancel</ion-button>
+        </td>
+      </tr>
+    </table>
+
+
+    <!-- no sell orders -->
+    <div *ngIf="!sellOrderList || !sellOrderList.length || sellOrderList.length < 1 || !hasOpenOrders">
+      There are no sell orders posted at this time
+      Your details can be sent to CB for a cattle unit purchase request
+      <br>
+      <br>
+      <ion-button>Send email</ion-button>
+    </div>
+  </div>
+
+  <!-- sell page -->
+  <div *ngIf="currentPage === 'sell'">
+    <br>
+
+    <ion-segment value="sell" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="sell">
+        <ion-label>Sell</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="sales">
+        <ion-label>Sales</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <br>
+
+    <!-- sell segment -->
+    <div *ngIf="sellSegment === 'sell'">
+      <ion-item>
+        <ion-label>Enter {{unitPriceToggle ? 'Units' : 'Price'}}</ion-label>
+        <ion-toggle
+          [(ngModel)]="unitPriceToggle"
+          (ionChange)="subPageToggle()"
+        >
+        </ion-toggle>
+      </ion-item>
+
+      <p *ngIf="currentUserCBEList.currentCBE">You currently have <strong>{{currentUserCBEList.currentCBE}}</strong> cattle units</p>
+      <p *ngIf="mySellOrderTotalAmount">You have <strong>{{mySellOrderTotalAmount}}</strong> units in open sell orders</p>
+      <p *ngIf="cattleUnit">The CBE price is <strong>R {{cattleUnit}}</strong></p>
+      <p *ngIf="myCattleUnitValue">Your CBE value is <strong>R {{myCattleUnitValue}}</strong></p>
+      <p *ngIf="mySellOrderTotalPrice">You have <strong>R {{mySellOrderTotalPrice}}</strong> in open sell orders</p>
+      <br>
+      <div *ngIf="unitPriceToggle && currentUserCBEList.currentCBE">
+        I want to sell
+        <br>
+        <ion-input
+          type="number"
+          [(ngModel)]="sellAmount"
+          (ngModelChange)="calculateSellAmount()">
+        </ion-input>
+        unit(s)
+        for
+        <ion-input
+          type="number"
+          [(ngModel)]="sellPrice"
+          (ngModelChange)="calculateSellUnits()">
+          R
+        </ion-input>
+      </div>
+
+      <!-- Price -->
+      <div *ngIf="!unitPriceToggle && myCattleUnitValue">
+        I want to sell units to the value of
+        <br>
+        <ion-input
+          type="number"
+          [(ngModel)]="sellPrice"
+          (ngModelChange)="calculateSellUnits()">
+          R
+        </ion-input>
+        <br>
+        This will be <strong>{{sellAmount}}</strong> unit(s)
+        <br>
+<!--        <br>-->
+<!--        Do you want to enter a different unit amount?-->
+<!--        <br>-->
+<!--        Enter it below:-->
+<!--        <br>-->
+<!--        <ion-input-->
+<!--          type="number"-->
+<!--          [(ngModel)]="userSellAmount"-->
+<!--          [placeholder]="sellAmount">-->
+<!--        </ion-input>-->
+      </div>
+      <br>
+      <ion-button
+        *ngIf="currentUserCBEList.currentCBE || myCattleUnitValue"
+        [disabled]="!sellAmount || !sellPrice"
+        (click)="submitSellOrder()"
+      >Submit sell order</ion-button>
+      <br>
+      <ion-note color="danger">{{errorMessage}}</ion-note>
+    </div>
+
+    <!-- sales segment -->
+    <div *ngIf="sellSegment === 'sales'">
+      <!-- has accepted open orders -->
+      <table class="whiteTable" *ngIf="mySellOrderList && mySellOrderList.length && mySellOrderList.length > 0">
+        <tr class="whiteTable">
+          <th>Buyer name</th>
+          <th>Buyer unique no.</th>
+          <th>Amount bought</th>
+          <th>Price for amount</th>
+          <th>Buyer Paid</th>
+          <th>Payment Received</th>
+        </tr>
+        <tr *ngFor="let sellOrder of mySellOrderList" class="whiteTable">
+          <td *ngIf="sellOrder.accepted">{{sellOrder.acceptedUser}}</td>
+          <td *ngIf="sellOrder.accepted">{{sellOrder.acceptedUserMemberNumber}}</td>
+          <td *ngIf="sellOrder.accepted">{{sellOrder.acceptedAmount}}</td>
+          <td *ngIf="sellOrder.accepted">R {{sellOrder.acceptedPrice}}</td>
+          <td *ngIf="sellOrder.accepted">
+            <ion-checkbox [checked]="sellOrder.buyerPaid" disabled="true">
+            </ion-checkbox>
+          </td>
+          <td *ngIf="sellOrder.accepted">
+            <ion-checkbox id="sellerReceived" [checked]="sellOrder.sellerReceived" (ionChange)="openConfirmModal($event, sellOrder)">
+            </ion-checkbox>
+          </td>
+        </tr>
+      </table>
+
+      <br>
+
+      <!-- Confirm modal -->
+      <ion-modal [isOpen]="showConfirmModal" [swipeToClose]="true" #confirmModal>
+        <ng-template>
+          <ion-content>Did you receive payment?</ion-content>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button (click)="dismissModal('cancel')">Cancel</ion-button>
+            </ion-buttons>
+            <ion-buttons slot="end">
+              <ion-button (click)="dismissModal('accept')">Accept</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ng-template>
+      </ion-modal>
+
+      <!-- has open orders -->
+      <table class="whiteTable" *ngIf="mySellOrderList && mySellOrderList.length && mySellOrderList.length > 0">
+        <tr class="whiteTable">
+          <th>Amount on order</th>
+          <th>Price for amount</th>
+          <th>Cancel order</th>
+        </tr>
+        <tr *ngFor="let sellOrder of mySellOrderList" class="whiteTable">
+          <td *ngIf="!sellOrder.accepted">{{sellOrder.sellAmount}}</td>
+          <td *ngIf="!sellOrder.accepted">R {{sellOrder.sellPrice}}</td>
+          <td *ngIf="!sellOrder.accepted">
+            <ion-button (click)="removeSellOrder(sellOrder)">Cancel</ion-button>
+          </td>
+        </tr>
+      </table>
+
+      <!-- no open orders -->
+      <div *ngIf="!mySellOrderList.length || mySellOrderList.length < 1">
+        You have no open sell orders
+      </div>
+    </div>
+
+  </div>
+
+  <!-- transfer page -->
+  <div *ngIf="currentPage === 'transfer'">
+<!--    <br>-->
+<!--    <h4>Search for the user you want to transfer to</h4>-->
+<!--    <br>-->
+<!--    <ion-input type="text" [(ngModel)]="searchText" (change)="searchUsers()" placeholder="Name or unique number">-->
+
+<!--    </ion-input>-->
+<!--    <br>-->
+<!--    <table class="whiteTable" *ngIf="displayedUsers.length > 0">-->
+<!--      <tr class="whiteTable">-->
+<!--        <th>Name</th>-->
+<!--        <th>Unique no.</th>-->
+<!--      </tr>-->
+<!--      <tr *ngFor="let user of displayedUsers" class="whiteTable" (click)="selectUser(user)">-->
+<!--        <td>{{user.name}}</td>-->
+<!--        <td>{{user.id}}</td>-->
+<!--      </tr>-->
+<!--    </table>-->
+<!--    <br>-->
+<!--    <br>-->
+<!--    <div *ngIf="selectedUser">-->
+<!--      I want to transfer-->
+<!--      <br>-->
+<!--      <ion-input-->
+<!--        type="number"-->
+<!--        [(ngModel)]="transferAmount"-->
+<!--        (change)="calculateTransferAmount()">-->
+<!--      </ion-input> cattle unit(s)-->
+<!--      to-->
+<!--      {{selectedUser.name}} - {{selectedUser.id}}-->
+<!--      <br>-->
+<!--      <br>-->
+<!--      <ion-button>Submit</ion-button>-->
+<!--    </div>-->
+
+  </div>
+</ion-content>

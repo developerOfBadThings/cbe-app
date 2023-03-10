@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>newsfeed</ion-title>
+    <ion-button slot="end" (click)="userDetails.logout()">Login</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-card *ngFor="let newsItem of newsFeed">
+    <p>{{newsItem.Date}}</p>
+    <p>{{newsItem.newsfeedItem}}</p>
+    <p>{{newsItem.UpdatedBy}}</p>
+
+  </ion-card>
+
+</ion-content>

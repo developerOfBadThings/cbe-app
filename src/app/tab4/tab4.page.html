@@ -1,0 +1,58 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      My Statement
+    </ion-title>
+    <ion-button slot="end" (click)="userDetails.logout()">Logout</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">My Statement</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <h4>Select the date period you want a statement for</h4>
+
+  <!-- From -->
+  <ion-item>
+    <ion-label>From date</ion-label>
+    <input type="date" [ngModel]="fromDate" placeholder="From date">
+  </ion-item>
+
+  <!-- To -->
+  <ion-item>
+    <ion-label>To date</ion-label>
+    <input type="date" [ngModel]="toDate" placeholder="To date">
+  </ion-item>
+  <br>
+  <ion-button (click)="updateAccountDetails()">View</ion-button>
+  <ion-button (click)="updateAccountDetails()">Export</ion-button>
+  <br>
+  <table class="whiteTable">
+    <tr class="whiteTable">
+      <th>Date</th>
+      <th>Description</th>
+      <th>Transaction no.</th>
+      <th>Calf price</th>
+      <th>Debit</th>
+      <th>Credit</th>
+      <th>CBE Balance</th>
+      <th>ZAR Balance</th>
+    </tr>
+    <tr *ngFor="let transaction of displayedTransactions" class="whiteTable">
+      <td>{{transaction.date}}</td>
+      <td>{{transaction.desc}}</td>
+      <td>{{transaction.transNo}}</td>
+      <td>{{transaction.calfPrice}}</td>
+      <td>{{transaction.debitAmount}}</td>
+      <td>{{transaction.creditAmount}}</td>
+      <td>{{transaction.CBEbalance}}</td>
+      <td>{{transaction.randBalance}}</td>
+    </tr>
+  </table>
+
+
+</ion-content>

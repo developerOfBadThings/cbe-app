@@ -1,0 +1,13 @@
+.whiteTable {
+  border: 1px solid white;
+  padding: 2px;
+  margin: 2px;
+  th {
+    border-right: 1px solid white;
+    padding: 2px;
+  }
+  td {
+    border-right: 1px solid white;
+    padding: 2px;
+  }
+}
